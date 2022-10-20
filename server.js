@@ -62,6 +62,14 @@ app.get(`/list`, (요청, 응답)=>{
 app.delete(`/delete`, (req, response) => {
   req.body._id = parseInt(req.body._id);
   db.collection(`post`).deleteOne(req.body, (err, result)=>{
-    response.status(200).send({message: `서버로부터: 성공`});
+    response.status(400).send({message: `서버로부터: 성공`});
   })
 });
+
+app.get(`/detail/:id`, (req, res)=>{
+  db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err, result)=>{
+    if(err) return console.log(err);
+    res.render(`detail.ejs`, { data : result });
+  })
+  
+})

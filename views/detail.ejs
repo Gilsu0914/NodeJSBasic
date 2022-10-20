@@ -23,34 +23,12 @@
       </div>
     </div>
   </nav>
+  <h2>상세페이지</h2>
   <div>
-    <ul class="list-group">
-      <% for(let i = 0; i < posts.length; i ++ ){ %>
-        <li classㅅ="list-group-item"  >
-          <h5>글번호: <%= posts[i]._id %></h5>
-          <h4>할일 제목: <%= posts[i].제목 %></h4>
-          <p>할일 마감날짜: <%= posts[i].날짜 %></p>
-          <button class="deleteBtn" data-id="<%= posts[i]._id %>"  method="DELETE">삭제하기</button>
-        </li>
-      <% } %>
-    </ul>
+    <h4>제목 : <%= data.제목 %> </h4>
+    <p>날짜 : <%= data.날짜 %>  </p>
   </div>
-  <script>
-    $(`.deleteBtn`).click((e)=>{
-      let deleteBtnDataId = e.target.dataset.id;
-      $.ajax({
-        method: `DELETE`, //삭제요청
-        url: `/delete`, //요청할 경로. 나는 "/delte" 경로라고 적어봤다.
-        data: { _id:  deleteBtnDataId } //요청보낼 때 삭제할 데이터
-      })
-      .done(()=>{
-        location.reload();
-      })
-      .fail((err)=>{
-        console.log(err);
-      })
-    })
-  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
 </body>
 </html>
