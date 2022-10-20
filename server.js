@@ -3,6 +3,8 @@ const app = express();
 app.use(express.urlencoded({extended: true})) 
 app.set(`view engine`, `ejs`)
 
+app.use(`public`, express.static(`public`)); //퍼블릭폴더 쓰겠다는 말. 이 안에 css넣으면 된다.
+
 let db;
 const MongoClient = require(`mongodb`).MongoClient;
 
@@ -22,11 +24,11 @@ MongoClient.connect(`mongodb+srv://gilsuAdmin:1q2w3e4r@cluster0.tkfuxtn.mongodb.
 })
 
 app.get(`/`, function(요청, 응답){
-  응답.sendFile(__dirname + `/index.html`)
+  응답.render(`index.ejs`)
 });
 
 app.get(`/write`, (요청, 응답) => {
-  응답.sendFile(__dirname + `/write.html`)
+  응답.render(`write.ejs`)
 });
 
 
