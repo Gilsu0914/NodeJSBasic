@@ -13,16 +13,17 @@
   <%- include('nav.html') %>
 
   <div class="write">
-    <form action="/add" method="POST">
+    <form action="/edit?_method=PUT" method="POST">
       <div>
         <label>해야할 일</label>
-        <input type="text" name="title">
+        <input type="text" name="id" style="display: none" value="<%= post._id %>">
+        <input type="text" name="title" value="<%= post.제목 %>">
       </div>
       <div>
         <label>마감 날짜</label>
-        <input type="text" name="date">
+        <input type="text" name="date" value="<%= post.날짜 %>">
       </div>
-      <button type="submit">추가</button>
+      <button type="submit">변경</button>
     </form>
     <p><a href="/list">해야할 일 목록 보러가기</a></p>
   </div>

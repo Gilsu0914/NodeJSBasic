@@ -2,8 +2,13 @@ const express = require(`express`);
 const app = express();
 app.use(express.urlencoded({extended: true})) 
 app.set(`view engine`, `ejs`)
+app.use(`/public`, express.static(`public`)); //퍼블릭폴더 쓰겠다는 말. 이 안에 css넣으면 된다.
 
-app.use(`public`, express.static(`public`)); //퍼블릭폴더 쓰겠다는 말. 이 안에 css넣으면 된다.
+//method override : 폼태그에서 put, delete 가능
+const methodOverride = require(`method-override`)
+app.use(methodOverride(`_method`))
+
+
 
 let db;
 const MongoClient = require(`mongodb`).MongoClient;
@@ -34,7 +39,6 @@ app.get(`/write`, (요청, 응답) => {
 
 
 app.post('/add', (요청, 응답)=>{
-  응답.send(`전송 완료했습니다.`);
   db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
     console.log(result.totalPosts);
     let num = result.totalPosts
@@ -74,4 +78,18 @@ app.get(`/detail/:id`, (req, res)=>{
     res.render(`detail.ejs`, { data : result });
   })
   
+})
+
+
+app.get(`/edit/:id`, (req, res )=>{
+  db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err,result)=>{
+    if(err) return console.log(err);
+    res.render(`edit.ejs`, { post : result })
+  })
+})
+
+app.put(`/edit`, (req, res)=>{
+  db.collection(`post`).updateOne({ _id: parseInt(req.body.id) }, { $set : { 제목: req.body.title, 날짜: req.body.date } }, (err, result)=>{
+
+  })
 })

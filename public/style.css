@@ -1,5 +1,62 @@
-nav{
-  border: 1px solid red;
-  background-color: black;
+/* index.ejs */
+.welcome{
+  text-align: center;
+  margin-top: 100px;
+}
+.welcome p{
+  margin-top: 15px;
+}
+.welcome p a {
+  text-decoration: none;
+}
+a:visited{
+  color: none;
+}
 
+
+/*wrtie.ejs*/
+.write{
+  margin-top: 60px;
+  padding: 20px;
+  width: 50vw;
+
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgb(109, 122, 109)
+}
+.write form{
+  width: 60%;
+  
+  margin: 0 auto;
+}
+.write form div{
+  margin-bottom: 5px;
+}
+.write form label{
+  width: 10vw;
+  margin-top: 2px;
+}
+.write form input {
+  border: 1px solid #ccc;
+  width: 100%;
+}
+.write form button{
+  display: block;
+  text-align: center;
+  
+  border: 1px solid ivory;
+  border-radius: 3px;
+  padding: 0.8vw;
+  margin: 30px auto;
+}
+.write p{
+  text-align: center;
+}
+.write p a {
+  padding: 0.8vw;
+
+  text-decoration: none;
+  color: white;
+  background-color: rgb(149, 195, 237);
+  border-radius: 3px;
 }
