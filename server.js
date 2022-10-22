@@ -105,7 +105,7 @@ app.put(`/edit`, (req, res)=>{
 
 
 
-
+//로그인
 app.get('/login', (req, res)=>{
   res.render('login.ejs')
 });
@@ -157,7 +157,7 @@ function didyouLogin(req, res, next){// (로그인 후 세션이 있으면 계�
   }
 }
 
-
+//검색기능
 app.get('/search', (req, res)=>{
   console.log(req.query.value)
   let searchCondition = [
@@ -178,11 +178,18 @@ app.get('/search', (req, res)=>{
 })
 
 
+//회원가입
 app.get('/signin', (req, res)=>{
   res.render('signin.ejs')
 })
-app.post('/resgister', (req, res)=>{
-  db.collection('login').insertOne({id: req.body.id, pw: req.body.pw}, (err, result)=>{
-    
+app.post('/register', (req, res)=>{
+  db.collection('login').findOne({id: req.body.id}, (err, result)=>{
+    if(result == null) {
+      db.collection('login').insertOne({id: req.body.id, pw: req.body.pw},()=>{
+        res.redirect('/')
+      })
+    }else if(result != null){
+      res.send('이미 존재하는 아이디입니다.')
+    }
   })
 })
