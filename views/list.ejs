@@ -19,15 +19,15 @@
     <button id="search" class="input-group-append btn btn-danger">검색</button>
   </div>
 
-  <div>
+  <div class="list">
     <ul class="list-group">
       <% for(let i = 0; i < posts.length; i ++ ){ %>
         <li classㅅ="list-group-item"  >
-          <h5>글번호: <%= posts[i]._id %></h5>
-          <h4>할일 제목: <%= posts[i].제목 %></h4>
-          <p>할일 마감날짜: <%= posts[i].날짜 %></p>
-          <button class="deleteBtn" data-id="<%= posts[i]._id %>"  method="DELETE">삭제하기</button>
-          <button><a href="/edit/<%= posts[i]._id %>">변경</a></button>
+          <p style="display: none">글번호: <%= posts[i]._id %></p>
+          <h5>제목: <%= posts[i].제목 %></h5>
+          <p>마감날짜: <%= posts[i].날짜 %></p>
+          <button class="deleteBtn" data-id="<%= posts[i]._id %>"  method="DELETE">완료</button>
+          <button class="changeBtn"><a href="/edit/<%= posts[i]._id %>">변경하기</a></button>
         </li>
       <% } %>
     </ul>

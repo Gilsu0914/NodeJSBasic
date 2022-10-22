@@ -176,3 +176,13 @@ app.get('/search', (req, res)=>{
     res.render('search.ejs', { posts: result })
   })
 })
+
+
+app.get('/signin', (req, res)=>{
+  res.render('signin.ejs')
+})
+app.post('/resgister', (req, res)=>{
+  db.collection('login').insertOne({id: req.body.id, pw: req.body.pw}, (err, result)=>{
+    
+  })
+})
