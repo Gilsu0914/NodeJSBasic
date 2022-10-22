@@ -9,12 +9,13 @@ const methodOverride = require(`method-override`)
 app.use(methodOverride(`_method`))
 
 //passport passport-local express-session
-const passport = require(`passport`);
-const LocalStrategy = require(`passport-local`).Strategy;
-const session = require(`express-session`)
-app.use(session({secret: `비밀코드`, resave: true, saveUninitialized: false}));
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+
+app.use(session({secret : '비밀코드', resave : true, saveUninitialized: false}));
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.session()); 
 
 
 let db;
@@ -75,7 +76,7 @@ app.get(`/list`, (요청, 응답)=>{
 app.delete(`/delete`, (req, response) => {
   req.body._id = parseInt(req.body._id);
   db.collection(`post`).deleteOne(req.body, (err, result)=>{
-    response.status(400).send({message: `서버로부터: 성공`});
+    response.status(200).send({message: `서버로부터: 성공`});
   })
 });
 app.get(`/detail/:id`, (req, res)=>{
@@ -103,9 +104,75 @@ app.put(`/edit`, (req, res)=>{
 
 
 
-app.get(`/login`, (req, res)=>{
-  res.render(`login.ejs`)
+
+
+app.get('/login', (req, res)=>{
+  res.render('login.ejs')
+});
+//로컬 방식으로 검사
+app.post('/login', passport.authenticate(`local`, { failureRedirect : '/fail'}), (req, res)=>{
+  res.redirect(`/`);
+});
+
+//로그인 검사절차
+passport.use(new LocalStrategy({
+  usernameField: 'id',
+  passwordField: 'pw',
+  session: true,
+  passReqToCallback: false,
+}, function (입력한아이디, 입력한비번, done) {
+  //console.log(입력한아이디, 입력한비번);
+  db.collection('login').findOne({ id: 입력한아이디 }, function(err, result)  {
+    if (err) return done(err)
+    if (!result) return done(null, false, { message: '존재하지않는 아이디입니다.' })
+    if (입력한비번 == result.pw) {
+      return done(null, result)
+    } else {
+      return done(null, false, { message: '비밀번호가 틀렸습니다.' })
+    }
+  })
+}));
+
+
+//세션만들기
+passport.serializeUser((user, done)=>{//id를 이용해서 세션을 저장시키는 코드(로그인성공시 발동) 첫인자는 위 코드의 result다.
+  done(null, user.id)
+});
+passport.deserializeUser((아이디, done)=>{//이 세션 데이터를 가진 사람을 DB에서 찾아줘.(마이페이지 접속시)
+  db.collection('login').findOne({id: 아이디}, (err, result)=>{
+    done(null, result )
+  })
+});
+
+
+//마이페이지 요청할 경우
+app.get(`/mypage`, didyouLogin, (req, res)=>{
+  res.render('mypage.ejs', { data: req.user })
 })
-app.post(`login`, (req, res)=>{
-  
+function didyouLogin(req, res, next){// (로그인 후 세션이 있으면 계속 req.user가 항상 있음)
+  if(req.user){
+    next()
+  }else{
+    res.send(`로그인 상태가 아닙니다.`)
+  }
+}
+
+
+app.get('/search', (req, res)=>{
+  console.log(req.query.value)
+  let searchCondition = [
+    {
+      $search: {
+        index: 'titleSearch', //내가 만든 아틀라스 서치인덱스 이름
+        text: {
+          query: req.query.value,
+          path: '제목'  // 제목날짜 둘다 찾고 싶으면 ['제목', '날짜']
+        }
+      }
+    }
+  ]
+  db.collection('post').aggregate(searchCondition).toArray((err, result)=>{
+    console.log(result)
+    res.render('search.ejs', { posts: result })
+  })
 })
