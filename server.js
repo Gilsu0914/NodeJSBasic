@@ -17,52 +17,49 @@ app.use(session({secret : '비밀코드', resave : true, saveUninitialized: fals
 app.use(passport.initialize());
 app.use(passport.session()); 
 
-
+//몽고DB 아틀라스 연결
 let db;
 const MongoClient = require(`mongodb`).MongoClient;
-
 MongoClient.connect(`mongodb+srv://gilsuAdmin:1q2w3e4r@cluster0.tkfuxtn.mongodb.net/?retryWrites=true&w=majority`, (error, client)=>{
   if(error){ return console.log(error) };
   db = client.db(`todoapp`) //todoapp database에 연결요청
 
-
   app.listen(8080, () => {
     console.log(`listening on 8080`)
   });
-  
-  // db.collection(`post`).insertOne({ _id: 0 , name: `gilsu`, age: 30 }, (error, result)=>{ //post라고 지은 컬렉션에, 저장할데이터 insert하고, 그 다음 콜백함수 실행
-  //   console.log(`저장완료`);
-  // });
-
 })
 
+
+
+
+
+
+//메인페이지
 app.get(`/`, function(요청, 응답){
   응답.render(`index.ejs`)
 });
 
+//할일 추가
 app.get(`/write`, (요청, 응답) => {
   응답.render(`write.ejs`)
 });
-
-
-
-app.post('/add', (요청, 응답)=>{
-  db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
-    console.log(result.totalPosts);
-    let num = result.totalPosts
+// app.post('/add', (요청, 응답)=>{
+//   db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
+//     console.log(result.totalPosts);
+//     let num = result.totalPosts
   
-    db.collection(`post`).insertOne({ _id: num + 1, 제목: 요청.body.title , 날짜: 요청.body.date }, (error, result)=>{
-      console.log(`날짜, 제목을 post라는 컬력션에 저장완료`)
-      //counter라는 컬렉션에 있는 totalPost항목도 1증가시켜야 함.
-      db.collection(`counter`).updateOne({ name: `게시물갯수` },{ $inc: { totalPosts: 1 }}, (error, result)=>{
-        if(error) return console.log(error);
-      });
-    })  
-  })
-})
+//     db.collection(`post`).insertOne({ _id: num + 1, 제목: 요청.body.title , 날짜: 요청.body.date }, (error, result)=>{
+//       console.log(`날짜, 제목을 post라는 컬력션에 저장완료`)
+//       //counter라는 컬렉션에 있는 totalPost항목도 1증가시켜야 함.
+//       db.collection(`counter`).updateOne({ name: `게시물갯수` },{ $inc: { totalPosts: 1 }}, (error, result)=>{
+//         if(error) return console.log(error);
+//       });
+//     })  
+//   })
+// })
 
-// 누가 /list 로 get요청으로 접속하면 
-// 실제 db에 저장된 데이터들로 예쁘게 꾸면진 html을 보여줌
+
+//list페이지
 app.get(`/list`, (요청, 응답)=>{
 
   db.collection(`post`).find().toArray((error, result)=>{ ///db의 post컬렉션 안의 모든 데이터 꺼내기 + array화
@@ -72,13 +69,16 @@ app.get(`/list`, (요청, 응답)=>{
 });
 
 
+//할일 삭제 +(10.22업데이트: 로그인했으니 내 아이디와 일치하는 것만 삭제)
+// app.delete(`/delete`, (req, response) => {
+//   req.body._id = parseInt(req.body._id); //_id는 숫자화처리 해줘야한다.
+//   db.collection(`post`).deleteOne(req.body, (err, result)=>{ //req.body 자체
+//     response.status(200).send({message: `서버로부터: 성공`});
+//   })
+// });
 
-app.delete(`/delete`, (req, response) => {
-  req.body._id = parseInt(req.body._id);
-  db.collection(`post`).deleteOne(req.body, (err, result)=>{
-    response.status(200).send({message: `서버로부터: 성공`});
-  })
-});
+
+//(params 실험을 위해서 만들어 봄)디테일페이지
 app.get(`/detail/:id`, (req, res)=>{
   db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err, result)=>{
     if(err) return console.log(err);
@@ -88,7 +88,7 @@ app.get(`/detail/:id`, (req, res)=>{
 })
 
 
-
+//할일 수정
 app.get(`/edit/:id`, (req, res )=>{
   db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err,result)=>{
     if(err) return console.log(err);
@@ -146,16 +146,17 @@ passport.deserializeUser((아이디, done)=>{//이 세션 데이터를 가진 �
 
 
 //마이페이지 요청할 경우
-app.get(`/mypage`, didyouLogin, (req, res)=>{
+app.get(`/mypage`, checkLogin, (req, res)=>{
   res.render('mypage.ejs', { data: req.user })
 })
-function didyouLogin(req, res, next){// (로그인 후 세션이 있으면 계속 req.user가 항상 있음)
+function checkLogin(req, res, next){// (로그인 후 세션이 있으면 계속 req.user가 항상 있음)
   if(req.user){
     next()
   }else{
     res.send(`로그인 상태가 아닙니다.`)
   }
 }
+
 
 //검색기능
 app.get('/search', (req, res)=>{
@@ -193,3 +194,42 @@ app.post('/register', (req, res)=>{
     }
   })
 })
+
+//회원가입 및 로그인 페이지를 만들었다면
+//할일을 추가할 때 누가 추가한 건지 만들 수 있다.
+//add.post를 수정하자.
+app.post('/add', (req, res)=>{
+  db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
+    const num = result.totalPosts;
+    const insertInfo = { _id: num + 1, 제목: req.body.title , 날짜: req.body.date, 작성자: req.user._id }; //유저정보 추가해서 넣자.
+  
+    db.collection(`post`).insertOne( insertInfo, (error, result)=>{
+      db.collection(`counter`).updateOne({ name: `게시물갯수` },{ $inc: { totalPosts: 1 }}, (error, result)=>{
+        if(error) return console.log(error);
+        res.redirect('/write');
+      });
+    })  
+  })
+})
+
+
+//할일 삭제 유저정보가 일치하는 것만
+app.delete(`/delete`, (req, res) => {
+  req.body._id = parseInt(req.body._id); //_id는 숫자화처리 해줘야한다.
+
+  const removeInfo = {
+    _id: req.body._id,
+    작성자: req.user._id
+  }
+
+  db.collection(`post`).deleteOne( removeInfo, (err, result)=>{ //req.body 자체
+    if(err){ console.log(err) }
+    res.status(200).send({message: `서버로부터: 성공`});
+  })
+});
+
+
+
+//router분리 (연습)
+app.use('/shop', require('./routes/shop.js'))
+app.use('/board/sub', require('./routes/board.js'))
