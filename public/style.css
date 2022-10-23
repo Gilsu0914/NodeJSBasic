@@ -16,17 +16,17 @@ a:visited{
 
 /*wrtie.ejs*/
 .write{
-  margin-top: 60px;
+  margin-top: 40px;
   padding: 20px;
-  width: 50vw;
+  width: 515px;
 
   margin-left: auto;
   margin-right: auto;
-  border: 1px solid rgb(109, 122, 109);
+  border: 1px solid #CED4DA;
   border-radius: 3px
 }
 .write form{
-  width: 60%;
+  width: 80%;
   
   margin: 0 auto;
 }
@@ -35,23 +35,35 @@ a:visited{
 }
 .write form label{
   width: 10vw;
-  margin-top: 2px;
+  margin: 5px 0px;
+  font-weight: bold;
 }
 .write form input {
   border: 1px solid #ccc;
   width: 100%;
   outline: none;
 }
+.write form textarea{
+  border: 1px solid #ccc;
+  width: 100%;
+  height: 200px;
+  outline: none;
+  resize: none;
+  white-space: pre-line;
+}
 .write form button{
   display: block;
   text-align: center;
   
-  border: 1px solid ivory;
+  background-color: #95c3ed;
+  border: 0px;
   border-radius: 3px;
   padding: 1vw;
   margin: 30px auto;
 
+  font-size: 13px;
   font-weight: bold;
+  color: white;
 }
 .write p{
   text-align: center;
@@ -61,16 +73,19 @@ a:visited{
 
   text-decoration: none;
   color: white;
-  background-color: rgb(149, 195, 237);
+  background-color: #95c3ed;
   border-radius: 3px;
 
   font-weight: bold;
 }
 
 /* list.ejs */
+.searchContainer{
+  width: 540px;
+  margin: 0 auto;
+}
 .list{
   width: 515px;
-
   margin: 0 auto;
 }
 .list li{

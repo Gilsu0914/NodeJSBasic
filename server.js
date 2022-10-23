@@ -39,79 +39,14 @@ app.get(`/`, function(요청, 응답){
   응답.render(`index.ejs`)
 });
 
-//할일 추가
-app.get(`/write`, (요청, 응답) => {
-  응답.render(`write.ejs`)
-});
-// app.post('/add', (요청, 응답)=>{
-//   db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
-//     console.log(result.totalPosts);
-//     let num = result.totalPosts
-  
-//     db.collection(`post`).insertOne({ _id: num + 1, 제목: 요청.body.title , 날짜: 요청.body.date }, (error, result)=>{
-//       console.log(`날짜, 제목을 post라는 컬력션에 저장완료`)
-//       //counter라는 컬렉션에 있는 totalPost항목도 1증가시켜야 함.
-//       db.collection(`counter`).updateOne({ name: `게시물갯수` },{ $inc: { totalPosts: 1 }}, (error, result)=>{
-//         if(error) return console.log(error);
-//       });
-//     })  
-//   })
-// })
-
-
-//list페이지
-app.get(`/list`, (요청, 응답)=>{
-
-  db.collection(`post`).find().toArray((error, result)=>{ ///db의 post컬렉션 안의 모든 데이터 꺼내기 + array화
-    if(error){return console.log(error)};
-    응답.render(`list.ejs`, { posts: result });
-  });
-});
-
-
-//할일 삭제 +(10.22업데이트: 로그인했으니 내 아이디와 일치하는 것만 삭제)
-// app.delete(`/delete`, (req, response) => {
-//   req.body._id = parseInt(req.body._id); //_id는 숫자화처리 해줘야한다.
-//   db.collection(`post`).deleteOne(req.body, (err, result)=>{ //req.body 자체
-//     response.status(200).send({message: `서버로부터: 성공`});
-//   })
-// });
-
-
-//(params 실험을 위해서 만들어 봄)디테일페이지
-app.get(`/detail/:id`, (req, res)=>{
-  db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err, result)=>{
-    if(err) return console.log(err);
-    res.render(`detail.ejs`, { data : result });
-  })
-  
-})
-
-
-//할일 수정
-app.get(`/edit/:id`, (req, res )=>{
-  db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err,result)=>{
-    if(err) return console.log(err);
-    res.render(`edit.ejs`, { post : result })
-  })
-})
-app.put(`/edit`, (req, res)=>{
-  db.collection(`post`).updateOne({ _id: parseInt(req.body.id) }, { $set : { 제목: req.body.title, 날짜: req.body.date } }, (err, result)=>{
-    if(err) return console.log(err);
-    res.redirect(`/list`);
-  })
-})
-
-
-
-
-//로그인
+//로그인 하기
 app.get('/login', (req, res)=>{
   res.render('login.ejs')
 });
-//로컬 방식으로 검사
+
+//로컬 방식으로 로그인 auth검사
 app.post('/login', passport.authenticate(`local`, { failureRedirect : '/fail'}), (req, res)=>{
-  res.redirect(`/`);
+  res.redirect(`/mypage`);
 });
 
 //로그인 검사절차
@@ -134,6 +69,24 @@ passport.use(new LocalStrategy({
 }));
 
 
+
+
+//회원가입 하기
+app.get('/signin', (req, res)=>{
+  res.render('signin.ejs')
+})
+app.post('/register', (req, res)=>{
+  db.collection('login').findOne({id: req.body.id}, (err, result)=>{
+    if(result == null) {
+      db.collection('login').insertOne({id: req.body.id, pw: req.body.pw, nickname: req.body.nickname },()=>{
+        res.redirect('/mypage')
+      })
+    }else if(result != null){
+      res.send('이미 사용중인 아이디입니다.')
+    }
+  })
+})
+
 //세션만들기
 passport.serializeUser((user, done)=>{//id를 이용해서 세션을 저장시키는 코드(로그인성공시 발동) 첫인자는 위 코드의 result다.
   done(null, user.id)
@@ -145,7 +98,7 @@ passport.deserializeUser((아이디, done)=>{//이 세션 데이터를 가진 �
 });
 
 
-//마이페이지 요청할 경우
+//회원가입 및 로그인 했으면 마이페이지로
 app.get(`/mypage`, checkLogin, (req, res)=>{
   res.render('mypage.ejs', { data: req.user })
 })
@@ -153,13 +106,62 @@ function checkLogin(req, res, next){// (로그인 후 세션이 있으면 계속
   if(req.user){
     next()
   }else{
-    res.send(`로그인 상태가 아닙니다.`)
+    res.redirect('/')
   }
 }
 
 
+
+
+//중고거래 글올리기
+app.get(`/write`, checkLogin, (요청, 응답) => {
+  응답.render(`write.ejs`)
+});
+
+app.post('/add', (req, res)=>{
+  db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
+    const num = result.totalPosts;
+    const insertInfo = { 
+      _id: num + 1, 
+      제목: req.body.title, 
+      동네위치: req.body.location,
+      가격: req.body.price, 
+      글내용: req.body.comment,      
+      작성자: req.user._id, //유저정보 추가해서 넣자.
+      작성자별명: req.user.nickname
+    }; 
+  
+    db.collection(`post`).insertOne( insertInfo, (error, result)=>{
+      db.collection(`counter`).updateOne({ name: `게시물갯수` },{ $inc: { totalPosts: 1 }}, (error, result)=>{
+        if(error) return console.log(error);
+        res.redirect('/list');
+      });
+    })  
+  })
+})
+
+
+
+//중고거래 리스트
+app.get(`/list`, checkLogin,  (요청, 응답)=>{
+
+  db.collection(`post`).find().toArray((error, result)=>{ ///db의 post컬렉션 안의 모든 데이터 꺼내기 + array화
+    if(error){return console.log(error)};
+    응답.render(`list.ejs`, { data : result });
+  });
+});
+
+//디테일페이지
+app.get(`/detail/:id`, checkLogin, (req, res)=>{
+  db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err, result)=>{
+    if(err) return console.log(err);
+    res.render(`detail.ejs`, { data : result });
+  })
+  
+})
+
 //검색기능
-app.get('/search', (req, res)=>{
+app.get('/search', checkLogin, (req, res)=>{
   console.log(req.query.value)
   let searchCondition = [
     {
@@ -179,41 +181,7 @@ app.get('/search', (req, res)=>{
 })
 
 
-//회원가입
-app.get('/signin', (req, res)=>{
-  res.render('signin.ejs')
-})
-app.post('/register', (req, res)=>{
-  db.collection('login').findOne({id: req.body.id}, (err, result)=>{
-    if(result == null) {
-      db.collection('login').insertOne({id: req.body.id, pw: req.body.pw},()=>{
-        res.redirect('/')
-      })
-    }else if(result != null){
-      res.send('이미 존재하는 아이디입니다.')
-    }
-  })
-})
-
-//회원가입 및 로그인 페이지를 만들었다면
-//할일을 추가할 때 누가 추가한 건지 만들 수 있다.
-//add.post를 수정하자.
-app.post('/add', (req, res)=>{
-  db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
-    const num = result.totalPosts;
-    const insertInfo = { _id: num + 1, 제목: req.body.title , 날짜: req.body.date, 작성자: req.user._id }; //유저정보 추가해서 넣자.
-  
-    db.collection(`post`).insertOne( insertInfo, (error, result)=>{
-      db.collection(`counter`).updateOne({ name: `게시물갯수` },{ $inc: { totalPosts: 1 }}, (error, result)=>{
-        if(error) return console.log(error);
-        res.redirect('/write');
-      });
-    })  
-  })
-})
-
-
-//할일 삭제 유저정보가 일치하는 것만
+//list에서 올린글 삭제
 app.delete(`/delete`, (req, res) => {
   req.body._id = parseInt(req.body._id); //_id는 숫자화처리 해줘야한다.
 
@@ -227,6 +195,35 @@ app.delete(`/delete`, (req, res) => {
     res.status(200).send({message: `서버로부터: 성공`});
   })
 });
+
+
+//list에서 올린글 수정
+app.get(`/edit/:id`, checkLogin, (req, res )=>{
+
+  db.collection(`post`).findOne({ _id: parseInt(req.params.id) }, (err,result)=>{ 
+    if(result.작성자별명 != req.user.nickname){ 
+      res.send('본인이 아닙니다.')
+      console.log(err)
+    }
+    else{res.render(`edit.ejs`, { data : result })}
+  })
+})
+app.put(`/edit`, (req, res)=>{
+  let editInfo = {
+    제목: req.body.title, 
+    동네위치: req.body.location,
+    가격: req.body.price, 
+    글내용: req.body.comment
+  }
+
+  db.collection(`post`).updateOne({ _id: parseInt(req.body.id) }, { $set : editInfo }, (err, result)=>{
+    if(err) return console.log(err);
+    res.redirect(`/list`);
+  })
+})
+
+
+
 
 
 

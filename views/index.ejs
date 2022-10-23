@@ -6,13 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
   <link rel="stylesheet" href="/public/style.css">
-  <title>실험작</title>
+  <title>수원시 중고마켓</title>
 </head>
 <body>
-  <%- include('nav.html') %>
+
+  <nav class="navbar navbar-expand-lg bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">수원시 중고마켓</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/login">로그인</a>
+          <a class="nav-link" href="/login">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </nav>
   
   <div class="welcome">
-    <h4>Welcome! please sign in.</h4>
+    <h1>수원지역 중고거래는 이제부터<br>수원시 중고마켓</h4>
     <p><a href="/login">로그인</a></p>
     <p><a href="/signin">회원가입</a></p>
   </div>
