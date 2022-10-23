@@ -1,13 +1,37 @@
 /* index.ejs */
 .welcome{
   text-align: center;
-  margin-top: 100px;
+  margin-top: 25vh;
+}
+.welcome h1{
+  font-size: 3rem;
+  font-weight: 900;
+
+  background: linear-gradient(to right top, #861657, #ffa69e);
+  color: transparent;
+  -webkit-background-clip: text;
+
+  margin-bottom: 40px;
+}
+.welcome h3{
+  color: #434343;
+  margin-bottom: 40px;
 }
 .welcome p{
-  margin-top: 15px;
+  margin: 0 auto 15px;
+  width: 200px;
+  padding: 10px;
+  background-color: #F1F3F5;
+
+  border-radius: 10px;
 }
 .welcome p a {
   text-decoration: none;
+  color: #45494C;
+  font-weight: bold;
+
+  display: block;
+  width: 100%;
 }
 a:visited{
   color: none;
@@ -15,19 +39,32 @@ a:visited{
 
 
 /*wrtie.ejs*/
+.writeColor{
+  height: 94vh;
+  background-color: #FBF7F3;
+}
+.writeHead{
+  padding-top: 10vh;
+  text-align: center;
+  font-weight: bold;
+
+  background: linear-gradient(to right, #bb5904, #e8d9ca);
+  color: transparent;
+  -webkit-background-clip: text;
+}
 .write{
   margin-top: 40px;
-  padding: 20px;
+  padding: 30px;
   width: 515px;
 
   margin-left: auto;
   margin-right: auto;
   border: 1px solid #CED4DA;
-  border-radius: 3px
+  border-radius: 10px;
+  background-color: white;  
 }
 .write form{
   width: 80%;
-  
   margin: 0 auto;
 }
 .write form div{
@@ -35,15 +72,20 @@ a:visited{
 }
 .write form label{
   width: 10vw;
-  margin: 5px 0px;
+  margin: 8px 0px;
   font-weight: bold;
 }
 .write form input {
-  border: 1px solid #ccc;
+  border: 0px;
+  border-bottom: 1px solid #ccc;
   width: 100%;
   outline: none;
+  
+  margin-bottom: 10px;
 }
 .write form textarea{
+  margin-top: 8px;
+
   border: 1px solid #ccc;
   width: 100%;
   height: 200px;
@@ -54,12 +96,14 @@ a:visited{
 .write form button{
   display: block;
   text-align: center;
+
+  width: 100%;
+  padding: 10px;
   
-  background-color: #95c3ed;
+  background-color: #D89459;
   border: 0px;
-  border-radius: 3px;
-  padding: 1vw;
-  margin: 30px auto;
+  border-radius: 10px;
+  margin: 30px auto 10px;
 
   font-size: 13px;
   font-weight: bold;
@@ -79,45 +123,140 @@ a:visited{
   font-weight: bold;
 }
 
+/*login */
+.loginBtn{
+  width: 100%;
+}
+.needsignin{
+  padding-left: 40px;
+  font-size: 13px;
+}
+span{
+  margin-left: 10px;
+  font-size: 13px;
+}
+
+
 /* list.ejs */
+.listColor{
+ background-color: #E5F3E6;
+ min-height:100vh;
+ padding-bottom: 60px;
+}
+.listHead{
+  padding-top: 10vh;
+  text-align: center;
+  font-weight: bold;
+
+  background: linear-gradient(to right, #0a290a, #afeccd);
+  color: transparent;
+  -webkit-background-clip: text;
+}
 .searchContainer{
-  width: 540px;
-  margin: 0 auto;
+  min-width: 560px;
+  width: 560px;
+  margin: 40px auto;
 }
 .list{
-  width: 515px;
+  width: 1100px;
   margin: 0 auto;
+ }
+.list ul{
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:20px;
 }
 .list li{
   list-style: none;
   text-decoration: none;
 
   border: 1px solid #CED4DA;
-  border-radius: 3px;
+  border-radius: 10px;
+  background-color: white;
+
   margin-top: 15px;
-  padding: 15px 10px; 
+  padding: 30px; 
+
+  position: relative;
+}
+.list h3{
+  margin-top: 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+.list h5{
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+.list strong{
+  background-color: #eeeeee;
+  font-size: 16px;
+  font-weight: 500;
+
+  color: #797979;
+  padding: 4px;
+  border-radius: 5px;
 }
 .list li p{
-  font-size: 12px;
-}
-.deleteBtn{
-  background-color: #dc3545;
-  color: white;
-  padding: 0.6vw;
-
-  border: 10px;
-  border-radius: 3px;
   font-size: 13px;
 }
-.changeBtn{
-  background-color: #95c3ed;
-  padding: 0.6vw;
+.list .listComment{
+  white-space: pre-line;
 
-  border: 10px;
-  border-radius: 3px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+  margin-bottom: 40px;
+}
+#listNickname{
+  position: absolute;
+  bottom: 10px;
+  color: #ccc;
+}
+.deleteBtn{
+  position: absolute;
+  background-color: transparent;
+
+  top: 25px;
+  right: 20px;
+
+  border: 0px;
+  font-size: 13px;
+  color: #ccc;
+}
+.changeBtn{
+  position: absolute;
+  background-color: transparent;
+
+  top: 25px;
+  right: 55px;
+
+  border: 0px;
   font-size: 13px;
 }
 .changeBtn a{
-  color: white;
+  color: #ccc;
   text-decoration: none;
+}
+
+/* edit.ejs */
+#editBtn{
+  background-color: rgb(138, 138, 138);
+}
+#backTolist{
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 0;
+  padding-bottom: 60px;
+}
+#backTolist a{
+  border: 0px;
+  border-radius: 10px;
+
+  padding: 10px 20px;
+  background-color: #b1d6b9;
+  color: #3d7b58;
+  text-decoration: none;
+
+  font-weight: bold;
 }

@@ -7,35 +7,34 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
   <link rel="stylesheet" href="/public/style.css">
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-  <title>실험작</title>
+  <title>중고마켓</title>
 </head>
 <body>
   
   <%- include('userNav.html')  %>
-
-  <h4 class="m1-2 my-3 text-center">중고거래 리스트</h4>
+  <div class="listColor">
+  <h2 class="listHead">매매정보를 확인해 보세요.</h2>
   <div class="container input-group mb-2 searchContainer">
-    <input type="text" class="form-control" id="search-input">
+    <input type="text" class="form-control" id="search-input" placeholder="찾고싶은 물품을 입력해 주세요.">
     <button id="search" class="input-group-append btn btn-danger">검색</button>
   </div>
 
+ 
   <div class="list">
-    <ul class="list-group">
+    <ul>
       <% for(let i = 0; i < data.length; i ++ ){ %>
-        <li classㅅ="list-group-item"  >
+        <li>
           <p>글번호: <%= data[i]._id %></p>
-          <p>작성자: <%= data[i].작성자별명 %></p>
-
-          <h5>제목: <%= data[i].제목 %></h5>
-          <p><%= data[i].동네위치 %></p> <!-- 동네위치 -->
-          <p>가격: <%= data[i].가격 %></p> 
-          <p><%= data[i].글내용 %></p>
-
+          <h3><%= data[i].제목 %></h3>
+          <h5><strong><%= data[i].동네위치 %></strong> <%= data[i].가격 %></h5>
+          <p class="listComment"><%= data[i].글내용 %></p>
+          <p id="listNickname">작성자: <%= data[i].작성자별명 %></p>
           <button class="changeBtn"><a href="/edit/<%= data[i]._id %>">수정</a></button>
           <button class="deleteBtn" data-id="<%= data[i]._id %>"  method="DELETE">삭제</button>
         </li>
       <% } %>
     </ul>
+  </div>
   </div>
   <script>
     $(`.deleteBtn`).click((e)=>{

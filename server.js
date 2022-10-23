@@ -147,6 +147,7 @@ app.get(`/list`, checkLogin,  (요청, 응답)=>{
 
   db.collection(`post`).find().toArray((error, result)=>{ ///db의 post컬렉션 안의 모든 데이터 꺼내기 + array화
     if(error){return console.log(error)};
+    result.reverse();
     응답.render(`list.ejs`, { data : result });
   });
 });
@@ -175,8 +176,7 @@ app.get('/search', checkLogin, (req, res)=>{
     }
   ]
   db.collection('post').aggregate(searchCondition).toArray((err, result)=>{
-    console.log(result)
-    res.render('search.ejs', { posts: result })
+    res.render('search.ejs', { data: result })
   })
 })
 
