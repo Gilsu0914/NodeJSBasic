@@ -4,6 +4,8 @@ app.use(express.urlencoded({extended: true}))
 app.set(`view engine`, `ejs`)
 app.use(`/public`, express.static(`public`)); //퍼블릭폴더 쓰겠다는 말. 이 안에 css넣으면 된다.
 
+require('dotenv').config() //env 환경변수 관리
+
 //method override : 폼태그에서 put, delete 가능
 const methodOverride = require(`method-override`)
 app.use(methodOverride(`_method`))
@@ -20,11 +22,11 @@ app.use(passport.session());
 //몽고DB 아틀라스 연결
 let db;
 const MongoClient = require(`mongodb`).MongoClient;
-MongoClient.connect(`mongodb+srv://gilsuAdmin:1q2w3e4r@cluster0.tkfuxtn.mongodb.net/?retryWrites=true&w=majority`, (error, client)=>{
+MongoClient.connect(process.env.DB_URL, (error, client)=>{ 
   if(error){ return console.log(error) };
   db = client.db(`todoapp`) //todoapp database에 연결요청
 
-  app.listen(8080, () => {
+  app.listen(process.env.PORT, () => {
     console.log(`listening on 8080`)
   });
 })
