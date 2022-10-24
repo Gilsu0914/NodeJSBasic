@@ -12,27 +12,31 @@
   
   <%- include('userNav.html')  %>
   <div class="writeColor">
-  <h2 class="writeHead">변경하고 싶으신 부분을 입력해주세요.</h2>
+  <h2 class="writeHead">변경하고 싶은 부분을 입력해주세요.</h2>
   <div class="write">
-    <form action="/edit?_method=PUT" method="POST">
+    <form action="/edit?_method=PUT" method="POST" enctype="multipart/form-data">
       <div>
-        <label>글제목</label>
+        <label>제목</label>
         <input type="text" name="id" style="display: none" value="<%= data._id %>">
         <input type="text" name="title" value="<%= data.제목 %>">
       </div>
       <div>
-        <label>동네위치</label>
+        <label>동네</label>
         <input type="text" name="location" value="<%= data.동네위치 %>">
       </div>
       <div>
         <label>가격</label>
-        <input type="text" name="price" value="<%= data.가격 %>" required>
+        <input type="text" name="price" value="<%= data.가격 %>">
       </div>
       <div>
-        <label>글내용</label>
+        <label>내용</label>
         <textarea type="text" name="comment" value="<%= data.글내용 %>"></textarea>
       </div>
-      <button id="editBtn" type="submit">변경</button>
+      <div>
+        <label>이미지</label>
+        <input type="file" name="productImage" value="<%= data.이미지 %>" required>
+      </div>
+      <button id="editBtn" type="submit">변경하기</button>
     </form>
   </div>
   </div>

@@ -13,30 +13,35 @@
 
   <%- include('userNav.html')  %>
   <div class="listColor">
-  <h2 class="listHead">매매정보를 확인해 보세요.</h2>
-  <div class="container input-group mb-2 searchContainer">
-    <input type="text" class="form-control" id="search-input" placeholder="찾고싶은 물품을 입력해 주세요.">
-    <button id="search" class="input-group-append btn btn-danger">검색</button>
+    <h2 class="listHead">매매정보를 확인해 보세요.</h2>
+    <div class="container input-group mb-2 searchContainer">
+      <input type="text" class="form-control" id="search-input" placeholder="찾고싶은 물품을 입력해 주세요.">
+      <button id="search" class="input-group-append btn btn-danger">검색</button>
+    </div>
+  
+   
+    <div class="list">
+      <ul>
+        <% for(let i = 0; i < data.length; i ++ ){ %>
+          <li>
+            <p>글번호: <%= data[i]._id %></p>
+            <div class="showcase">
+              <img src="../public/images/<%= data[i].이미지 %>">
+            </div>
+            <h3><%= data[i].제목 %></h3>
+            <h5><strong><%= data[i].동네위치 %></strong> <%= data[i].가격 %></h5>
+            <p class="listComment"><%= data[i].글내용 %></p>
+            <p id="listNickname">작성자: <%= data[i].작성자별명 %></p>
+            <button class="changeBtn"><a href="/edit/<%= data[i]._id %>">수정</a></button>
+            <button class="deleteBtn" data-id="<%= data[i]._id %>"  method="DELETE">삭제</button>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+    <p id="backTolist"><a href="/list">목록으로 돌아가기</a></p>
   </div>
 
-  <div class="list">
-    <ul>
-      <% for(let i = 0; i < data.length; i ++ ){ %>
-        <li>
-          <p>글번호: <%= data[i]._id %></p>
-          <h3><%= data[i].제목 %></h3>
-          <h5><strong><%= data[i].동네위치 %></strong> <%= data[i].가격 %></h5>
-          <p class="listComment"><%= data[i].글내용 %></p>
-          <p id="listNickname">작성자: <%= data[i].작성자별명 %></p>
-          <button class="changeBtn"><a href="/edit/<%= data[i]._id %>">수정</a></button>
-          <button class="deleteBtn" data-id="<%= data[i]._id %>"  method="DELETE">삭제</button>
-        </li>
-      <% } %>
-    </ul>
-  </div>
-  <p id="backTolist"><a href="/list">목록으로 돌아가기</a></p>
 
-  </div>
   <script>
     $(`.deleteBtn`).click((e)=>{
       let deleteBtnDataId = e.target.dataset.id;

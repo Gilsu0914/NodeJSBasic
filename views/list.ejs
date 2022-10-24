@@ -25,6 +25,9 @@
       <% for(let i = 0; i < data.length; i ++ ){ %>
         <li>
           <p>글번호: <%= data[i]._id %></p>
+          <div class="showcase">
+            <img src="../public/images/<%= data[i].이미지 %>">
+          </div>
           <h3><%= data[i].제목 %></h3>
           <h5><strong><%= data[i].동네위치 %></strong> <%= data[i].가격 %></h5>
           <p class="listComment"><%= data[i].글내용 %></p>

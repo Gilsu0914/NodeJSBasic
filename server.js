@@ -30,6 +30,31 @@ MongoClient.connect(`mongodb+srv://gilsuAdmin:1q2w3e4r@cluster0.tkfuxtn.mongodb.
 })
 
 
+//멀터 라이브러리
+let multer = require('multer');
+const storage = multer.diskStorage({ //하드에 저장하라는 말. memoryStorage는 램에 저장인데 이건 휘발성용도
+  destination : function(req, file, cb){
+    cb(null, './public/images') // /public/images안에 이미지가 저장됨
+  },
+  filename : function(req, file, cb){
+    cb(null, file.originalname) //저장한 이미지의 파일명 설정하는 부분
+  }
+});
+
+const path = require('path');
+const { read } = require('fs');
+const upload = multer({ //multer를 이용한 이미지 하드에 저장하기 변수. 미들웨어처럼 사용하면 된다.
+  storage: storage,
+  filefilter : function(req, file, cb){
+    let ext = path.extname(file.originalname);
+        if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
+            return callback(new Error('PNG, JPG만 업로드하세요'))
+        }
+        callback(null, true)
+  }
+}); 
+
+
 
 
 
@@ -118,22 +143,25 @@ app.get(`/write`, checkLogin, (요청, 응답) => {
   응답.render(`write.ejs`)
 });
 
-app.post('/add', (req, res)=>{
-  db.collection(`counter`).findOne({name: `게시물갯수`}, (error, result)=>{
+app.post('/add', upload.single('productImage'), (req, res)=>{
+  db.collection(`counter`).findOne({name: `게시물갯수`}, (err, result)=>{
     const num = result.totalPosts;
+
     const insertInfo = { 
       _id: num + 1, 
       제목: req.body.title, 
       동네위치: req.body.location,
       가격: req.body.price, 
-      글내용: req.body.comment,      
-      작성자: req.user._id, //유저정보 추가해서 넣자.
-      작성자별명: req.user.nickname
+      글내용: req.body.comment,    
+      이미지: req.file.originalname, //이미지 추가
+      작성자: req.user._id, //유저정보 추가
+      작성자별명: req.user.nickname,
     }; 
   
     db.collection(`post`).insertOne( insertInfo, (error, result)=>{
       db.collection(`counter`).updateOne({ name: `게시물갯수` },{ $inc: { totalPosts: 1 }}, (error, result)=>{
-        if(error) return console.log(error);
+        if(error) return console.log(error)
+       
         res.redirect('/list');
       });
     })  
@@ -163,7 +191,7 @@ app.get(`/detail/:id`, checkLogin, (req, res)=>{
 
 //검색기능
 app.get('/search', checkLogin, (req, res)=>{
-  console.log(req.query.value)
+  // console.log(req.query.value)
   let searchCondition = [
     {
       $search: {
@@ -208,12 +236,13 @@ app.get(`/edit/:id`, checkLogin, (req, res )=>{
     else{res.render(`edit.ejs`, { data : result })}
   })
 })
-app.put(`/edit`, (req, res)=>{
+app.put(`/edit`, upload.single('productImage'),  (req, res)=>{
   let editInfo = {
     제목: req.body.title, 
     동네위치: req.body.location,
     가격: req.body.price, 
-    글내용: req.body.comment
+    글내용: req.body.comment,
+    이미지: req.file.originalname
   }
 
   db.collection(`post`).updateOne({ _id: parseInt(req.body.id) }, { $set : editInfo }, (err, result)=>{

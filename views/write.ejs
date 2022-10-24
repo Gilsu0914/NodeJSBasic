@@ -12,9 +12,9 @@
   
   <%- include('userNav.html')%>
   <div class="writeColor">
-  <h2 class="writeHead">사고싶은 물건이나, 팔고싶은 물건을 올려주세요.</h2>
+  <h2 class="writeHead">팔고싶은 물건에 대해 입력해 주세요.</h2>
   <div class="write">
-    <form action="/add" method="POST">
+    <form action="/add" method="POST" enctype="multipart/form-data">
       <div>
         <label>제목</label>
         <input type="text" name="title" required>
@@ -31,7 +31,11 @@
         <label>내용</label>
         <textarea type="text" name="comment"></textarea>
       </div>
-      <button type="submit">등록</button>
+      <div>
+        <label>이미지</label>
+        <input type="file" name="productImage" required>
+      </div>
+      <button type="submit">등록하기</button>
     </form>
   </div>
   </div>
