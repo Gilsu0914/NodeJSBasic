@@ -286,6 +286,27 @@ app.put(`/edit`, upload.single("productImage"), (req, res) => {
 });
 
 //채팅
+app.post("/chat", checkLogin, (req, res) => {
+  db.collection("chat").findOne(
+    { member: [req.body.판매자, req.user.nickname] },
+    (err, result) => {
+      //이미 대화중인 상대라면 중복채팅방 생성안되게 조치해주자.
+      if (result) {
+        res.redirect("/chat");
+      } else {
+        let chatInfo = {
+          member: [req.body.판매자, req.user.nickname],
+          date: new Date().toLocaleDateString(),
+        };
+
+        db.collection("chat").insertOne(chatInfo, (err, result) => {
+          res.send("성공");
+        });
+      }
+    }
+  );
+});
+
 app.get("/chat", checkLogin, (req, res) => {
   db.collection("chat")
     .find({ member: req.user.nickname })
@@ -293,19 +314,6 @@ app.get("/chat", checkLogin, (req, res) => {
     .then((result) => {
       res.render("chat.ejs", { data: result });
     });
-});
-
-app.post("/chat", checkLogin, (req, res) => {
-  const chatInfo = {
-    member: [req.body.판매자, req.user.nickname],
-    date: new Date().toLocaleDateString(),
-    // title: "수원시 중고마켓 채팅방", //
-  };
-
-  db.collection("chat").insertOne(chatInfo, (err, result) => {
-    console.log(result);
-    res.send("성공");
-  });
 });
 
 //채팅룸 -> 대화
@@ -338,10 +346,24 @@ app.get("/message/:id", checkLogin, (req, res) => {
     .find({ parent: req.params.id }) //url파라미터 GET요청 사용으로 가능한 req.params.id
     .toArray()
     .then((result) => {
-      //방문자에게 데이터 전송해주기
+      //방문자에게 데이터 전송해주기 //파라미터 안에 절대 띄어쓰기 하지 말자 ㅠㅠ
       res.write("event: fromserver\n"); //event: 보낼데이터의 이름\n  에시 -> .addEventlistener('fromserver', ()=>{})
       res.write("data: " + JSON.stringify(result) + "\n\n"); //data: 보낼 데이터\n\n 문자화해서 내보내주자.
     });
+
+  //mongoDB change stream 복붙해서 쓰자. (유저가 메세지를 전송하면 화면상에 계속계속 방금 작업한 메세지를 업데이트를 해주기 위해서)
+  const pipeline = [
+    {
+      $match: { "fullDocument.parent": req.params.id },
+    },
+  ]; //컬렉션 안의 원하는 doc만 감시하고 싶을 경우 'fullDocument. ~' 이렇게 써주어야 한다. 정해진 규칙이니 주의.
+  const changeStream = db.collection("message").watch(pipeline); //watch()가 실시간 감시역할.
+  //해당 컬렉션에 변동이 생기면 코드 실행. 즉 doc가 추가,수정,삭제 등 변동이 일어날 때.
+  changeStream.on("change", (result) => {
+    console.log(result.fullDocument);
+    res.write("event: fromserver\n"); // event : <- 이런식으로 띄어쓰기 절대하지 말자... 작동안한다.
+    res.write("data:" + JSON.stringify([result.fullDocument]) + "\n\n`");
+  });
 });
 
 //router분리 (연습)

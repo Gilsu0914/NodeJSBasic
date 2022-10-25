@@ -21,14 +21,15 @@
       <ul class="list-group chat-list">
         <% for (var i=0; i < data.length ; i++){ %>
         <li class="list-group-item" data-id="<%= data[i]._id %>">
-          <h6 class="text-small">판매자: <%= data[i].member[0] %></h6>
+          <h6 class="text-small">대화상대: <%= data[i].member[0] %></h6>
+          <h6 class="text-small">대화상대: <%= data[i].member[1] %></h6>
           <h6><%= data[i].date %></h6>
         </li>
         <% } %>
       </ul>
       <div>
         <!-- 실시간 메세지 생성이 되는 곳-->
-        <ul>
+        <ul class="message-content">
           <li>채팅메세지 예시1</li>
         </ul>
       </div>
@@ -41,9 +42,10 @@
       let chatId;
       let eventSource;
       $(".list-group-item").click((e) => {
-        console.log(e.currentTarget.dataset.id);
         chatId = e.currentTarget.dataset.id;
 
+        //누군가와의 채팅을 하기 위해 채팅방을 누르는 순간 초기화. (이전데이터값과 이번에 가져온 데이터값이 다 누적되는 걸 방지하기 위해서.)
+        $(".message-content").html("");
         //누를 때마다 계속 소통채널을 입장하니, 쓸데없이 발생하는 소통채널 나가기.
         if (eventSource != undefined) {
           eventSource.close();
@@ -55,7 +57,9 @@
           console.log(JSON.parse(e.data));
 
           let temp = JSON.parse(e.data);
-          temp.forEach((a, i) => {});
+          temp.forEach((i) => {
+            $(".message-content").append(`<li>${i.content}</li>`);
+          });
         });
       });
 

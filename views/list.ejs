@@ -18,7 +18,7 @@
     <%- include('userNav.html') %>
     <div class="listColor">
       <h2 class="listHead">매매정보를 확인해 보세요.</h2>
-      <div class="container input-group mb-2 searchContainer">
+      <div class="input-group mb-2 searchContainer">
         <input
           type="text"
           class="form-control"
@@ -88,7 +88,7 @@
         window.location.replace("/search?value=" + inputValue);
       });
 
-      //채팅
+      //판매자와의 대화방 생성
       $(".chatBtn").click((e) => {
         let seller = e.currentTarget.dataset.id;
         $.post("/chat", { 판매자: seller }).then(() => {
