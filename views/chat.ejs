@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="KOR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/public/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+    <title>중고마켓</title>
+  </head>
+  <body>
+    <%- include('userNav.html')%>
+
+    <div>
+      <ul class="list-group chat-list">
+        <% for (var i=0; i < data.length ; i++){ %>
+        <li class="list-group-item" data-id="<%= data[i]._id %>">
+          <h6 class="text-small">판매자: <%= data[i].member[0] %></h6>
+          <h6><%= data[i].date %></h6>
+        </li>
+        <% } %>
+      </ul>
+
+      <input type="text" id="send-input" />
+      <button id="send">전송</button>
+    </div>
+    <script>
+      let chatId;
+      let eventSource;
+      $(".list-group-item").click((e) => {
+        chatId = e.currentTarget.dataset.id;
+
+        eventSource = new EventSource("/message/" + chatId); //get 요청과 똑같음, 해당하는 채팅방의 고유id한테만 가져오기
+        eventSource.addEventListener("test", (e) => {
+          //서버로부터 실시간 데이터 받아오기
+          console.log(JSON.parse(e.data));
+        });
+      });
+
+      $("#send").click(() => {
+        let sendInputValue = $("#send-input").val();
+
+        let sendInfo = {
+          parent: chatId,
+          content: sendInputValue,
+        };
+        $.post("/message", sendInfo);
+      });
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
