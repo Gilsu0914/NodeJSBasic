@@ -326,16 +326,21 @@ app.post("/message", checkLogin, (req, res) => {
 });
 
 app.get("/message/:id", checkLogin, (req, res) => {
+  //url파라미터로 GET요청사용
+  //지속적으로 응답해주기 header설정
   res.writeHead(200, {
     Connection: "keep-alive",
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache",
   });
 
-  db.collection("message").find({ parent: req.params.id }),
-    toArray().then((result) => {
-      res.write("event: test\n");
-      res.write("data: " + JSON.stringify(result) + "\n\n");
+  db.collection("message")
+    .find({ parent: req.params.id }) //url파라미터 GET요청 사용으로 가능한 req.params.id
+    .toArray()
+    .then((result) => {
+      //방문자에게 데이터 전송해주기
+      res.write("event: fromserver\n"); //event: 보낼데이터의 이름\n  에시 -> .addEventlistener('fromserver', ()=>{})
+      res.write("data: " + JSON.stringify(result) + "\n\n"); //data: 보낼 데이터\n\n 문자화해서 내보내주자.
     });
 });
 
