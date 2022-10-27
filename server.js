@@ -133,7 +133,7 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 passport.deserializeUser((아이디, done) => {
-  //이 세션 데이터를 가진 사람을 DB에서 찾아줘.(마이페이지 접속시)
+  //이 세션 데이터를 가진 사람을 DB에서 찾아줘.
   db.collection("login").findOne({ id: 아이디 }, (err, result) => {
     done(null, result);
   });
@@ -151,6 +151,16 @@ function checkLogin(req, res, next) {
     res.redirect("/");
   }
 }
+
+//로그아웃
+app.get("/logout", function (req, res, next) {
+  req.logout(function (err, result) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+});
 
 //중고거래 글올리기
 app.get(`/write`, checkLogin, (요청, 응답) => {
@@ -214,7 +224,6 @@ app.get(`/detail/:id`, checkLogin, (req, res) => {
 
 //검색기능
 app.get("/search", checkLogin, (req, res) => {
-  // console.log(req.query.value)
   let searchCondition = [
     {
       $search: {
@@ -312,7 +321,7 @@ app.get("/chat", checkLogin, (req, res) => {
     .find({ member: req.user.nickname })
     .toArray()
     .then((result) => {
-      res.render("chat.ejs", { data: result });
+      res.render("chat.ejs", { data: result, user: req.user });
     });
 });
 
@@ -360,12 +369,11 @@ app.get("/message/:id", checkLogin, (req, res) => {
   const changeStream = db.collection("message").watch(pipeline); //watch()가 실시간 감시역할.
   //해당 컬렉션에 변동이 생기면 코드 실행. 즉 doc가 추가,수정,삭제 등 변동이 일어날 때.
   changeStream.on("change", (result) => {
-    console.log(result.fullDocument);
     res.write("event: fromserver\n"); // event : <- 이런식으로 띄어쓰기 절대하지 말자... 작동안한다.
     res.write("data:" + JSON.stringify([result.fullDocument]) + "\n\n`");
   });
 });
 
 //router분리 (연습)
-app.use("/shop", require("./routes/shop.js"));
-app.use("/board/sub", require("./routes/board.js"));
+// app.use("/shop", require("./routes/shop.js"));
+// app.use("/board/sub", require("./routes/board.js"));

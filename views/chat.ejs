@@ -17,27 +17,34 @@
   <body>
     <%- include('userNav.html')%>
 
-    <div>
-      <ul class="list-group chat-list">
-        <% for (var i=0; i < data.length ; i++){ %>
-        <li class="list-group-item" data-id="<%= data[i]._id %>">
-          <h6 class="text-small">대화상대: <%= data[i].member[0] %></h6>
-          <h6 class="text-small">대화상대: <%= data[i].member[1] %></h6>
-          <h6><%= data[i].date %></h6>
-        </li>
-        <% } %>
-      </ul>
-      <div>
-        <!-- 실시간 메세지 생성이 되는 곳-->
-        <ul class="message-content">
-          <li>채팅메세지 예시1</li>
+    <div class="chatColor">
+      <h2 class="chatHead">따듯한 인삿말로 시작해 볼까요.</h2>
+      <div class="chatContainer">
+        <ul class="list-group chat-list">
+          <% for (var i=0; i < data.length ; i++){ %>
+          <li class="list-group-item" data-id="<%= data[i]._id %>">
+            <% if(user.nickname == data[i].member[0] ){ %>
+            <h7 class="text-small">구매희망자: <%= data[i].member[1] %></h7>
+            <% } if(user.nickname == data[i].member[1] ){ %>
+            <h7 class="text-small">판매자: <%= data[i].member[0] %></h7>
+            <% } %>
+            <p>개설일: <%= data[i].date %></p>
+          </li>
+          <% } %>
         </ul>
+        <aside>
+          <!-- 실시간 메세지 생성이 되는 곳-->
+          <ul class="message-content">
+            <li>왼쪽 대화 상대를 선택해 주세요.</li>
+          </ul>
+        </aside>
       </div>
-      <div>
+      <div class="sendContainer">
         <input type="text" id="send-input" />
         <button id="send">전송</button>
       </div>
     </div>
+
     <script>
       let chatId;
       let eventSource;
@@ -58,7 +65,9 @@
 
           let temp = JSON.parse(e.data);
           temp.forEach((i) => {
-            $(".message-content").append(`<li>${i.content}</li>`);
+            $(".message-content").append(
+              `<li><em>${i.userId}</em> : ${i.content}</li>`
+            );
           });
         });
       });
@@ -72,6 +81,8 @@
           content: sendInputValue,
         };
         $.post("/message", sendInfo);
+
+        $("#send-input").val("");
       });
     </script>
     <script

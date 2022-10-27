@@ -83,6 +83,7 @@
           });
       });
 
+      //검색value
       $("#search").click(() => {
         let inputValue = $("#search-input").val();
         window.location.replace("/search?value=" + inputValue);
@@ -92,7 +93,7 @@
       $(".chatBtn").click((e) => {
         let seller = e.currentTarget.dataset.id;
         $.post("/chat", { 판매자: seller }).then(() => {
-          window.open("http://localhost:8080/chat");
+          window.location = "http://localhost:8080/chat";
         });
       });
     </script>

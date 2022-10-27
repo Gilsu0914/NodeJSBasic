@@ -155,7 +155,6 @@ a:visited {
   font-size: 13px;
 }
 span {
-  margin-left: 10px;
   font-size: 13px;
 }
 #loginBtn {
@@ -367,4 +366,96 @@ span {
   text-decoration: none;
 
   font-weight: bold;
+}
+
+/*chat.ejs, message.ejs*/
+.chatColor {
+  height: 95vh;
+  padding-bottom: 30px;
+  background-color: #fff3f3;
+}
+.chatHead {
+  padding-top: 70px;
+  text-align: center;
+  font-weight: bold;
+
+  background: linear-gradient(to right, #dc514c, #dbe6e1);
+  color: transparent;
+  -webkit-background-clip: text;
+}
+.chatContainer {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  height: 756px;
+
+  padding-top: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.list-group {
+  background-color: #f1e0e0;
+  margin-right: 10px;
+}
+.list-group-item {
+  cursor: pointer;
+}
+.list-group-item h6 {
+  margin-top: 5px;
+}
+.list-group-item > p {
+  font-size: 13px;
+}
+aside {
+  position: relative;
+
+  background-color: white;
+  border: 1px solid #ced4da;
+
+  overflow-y: scroll;
+  box-sizing: border-box;
+  height: 655px;
+}
+.message-content {
+  width: 100%;
+  bottom: 100px;
+  padding-left: 10px;
+}
+.message-content li {
+  margin-top: 10px;
+  margin-right: 10px;
+  list-style: none;
+
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #e3f2df;
+}
+
+.sendContainer {
+  margin: 0 auto;
+
+  position: relative;
+  bottom: 68px;
+  left: 181px;
+
+  width: 438px;
+  margin: 0 auto;
+  padding: 20px;
+
+  background-color: #f1e0e0;
+}
+.sendContainer input {
+  width: 82%;
+  padding: 1px;
+  outline: none;
+
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+}
+#send {
+  width: 15%;
+
+  float: right;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background-color: white;
 }
