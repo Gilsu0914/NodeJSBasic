@@ -23,16 +23,19 @@ app.use(passport.session());
 //몽고DB 아틀라스 연결
 let db;
 const MongoClient = require(`mongodb`).MongoClient;
-MongoClient.connect(process.env.DB_URL, (error, client) => {
-  if (error) {
-    return console.log(error);
-  }
-  db = client.db(`todoapp`); //todoapp database에 연결요청
+MongoClient.connect(
+  "mongodb+srv://gilsuAdmin:1q2w3e4r@cluster0.tkfuxtn.mongodb.net/?retryWrites=true&w=majority",
+  (error, client) => {
+    if (error) {
+      return console.log(error);
+    }
+    db = client.db(`todoapp`); //todoapp database에 연결요청
 
-  http.listen(process.env.PORT || 8080, () => {
-    console.log(`listening on 8080`);
-  });
-});
+    http.listen(process.env.PORT || 8080, () => {
+      console.log(`listening on 8080`);
+    });
+  }
+);
 
 //멀터 라이브러리 (이미지저장을 위한)
 let multer = require("multer");
