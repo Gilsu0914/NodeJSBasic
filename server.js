@@ -23,13 +23,13 @@ app.use(passport.session());
 //몽고DB 아틀라스 연결
 let db;
 const MongoClient = require(`mongodb`).MongoClient;
-MongoClient.connect(process.env.PORT || 8080, (error, client) => {
+MongoClient.connect(process.env.DB_URL, (error, client) => {
   if (error) {
     return console.log(error);
   }
   db = client.db(`todoapp`); //todoapp database에 연결요청
 
-  http.listen(process.env.PORT, () => {
+  http.listen(process.env.PORT || 8080, () => {
     console.log(`listening on 8080`);
   });
 });
