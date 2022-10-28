@@ -14,7 +14,6 @@ app.use(methodOverride(`_method`));
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
-
 app.use(
   session({ secret: "비밀코드", resave: true, saveUninitialized: false })
 );
@@ -378,24 +377,18 @@ app.get("/message/:id", checkLogin, (req, res) => {
   });
 });
 
-//anonymous.io 단체채팅방
-app.get("/anonymous", (req, res) => {
-  res.render("anonymous.ejs");
-});
-//누군가가 웹소켓에 접속하면 함수실행
-io.on("connection", (socket) => {
-  console.log(socket);
-  //채팅방 만들고 작명한 방에 입장.
-  socket.on("joinRoom1", (data) => {
-    socket.join("socketChatroom1");
-  });
-
-  //서버가 유저로부터의 메세지 수신
-  socket.on("user", (data) => {
-    //서버 -> 모든유저에게 메세지전송. 그래서 작명도 broadcast
-    io.emit("broadcast", data);
-  });
-});
+// //anonymous.io 채팅방 (연습)
+// app.get("/anonymous", (req, res) => {
+//   res.render("anonymous.ejs");
+// });
+// //누군가가 웹소켓에 접속하면 함수실행
+// io.on("connection", (socket) => {
+//   //서버가 유저로부터의 메세지 수신
+//   socket.on("user", (data) => {
+//     //서버 -> 모든유저에게 메세지전송. 그래서 작명도 broadcast
+//     io.emit("broadcast", data);
+//   });
+// });
 
 //router분리 (연습)
 // app.use("/shop", require("./routes/shop.js"));
