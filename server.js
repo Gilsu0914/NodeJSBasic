@@ -30,12 +30,12 @@ MongoClient.connect(process.env.DB_URL, (error, client) => {
   }
   db = client.db(`todoapp`); //todoapp database에 연결요청
 
-  app.listen(process.env.PORT, () => {
+  http.listen(process.env.PORT, () => {
     console.log(`listening on 8080`);
   });
 });
 
-//멀터 라이브러리
+//멀터 라이브러리 (이미지저장을 위한)
 let multer = require("multer");
 const storage = multer.diskStorage({
   //하드에 저장하라는 말. memoryStorage는 램에 저장인데 이건 휘발성용도
@@ -46,7 +46,6 @@ const storage = multer.diskStorage({
     cb(null, file.originalname); //저장한 이미지의 파일명 설정하는 부분
   },
 });
-
 const path = require("path");
 const { read } = require("fs");
 const upload = multer({
@@ -60,6 +59,11 @@ const upload = multer({
     callback(null, true);
   },
 });
+
+//socket.io 세팅
+const http = require("http").createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(http);
 
 //메인페이지
 app.get(`/`, function (요청, 응답) {
@@ -325,7 +329,7 @@ app.get("/chat", checkLogin, (req, res) => {
     });
 });
 
-//채팅룸 -> 대화
+//채팅룸 -> 대화 SSE방식
 app.post("/message", checkLogin, (req, res) => {
   const messageInfo = {
     parent: req.body.parent, //상위게시물
@@ -371,6 +375,25 @@ app.get("/message/:id", checkLogin, (req, res) => {
   changeStream.on("change", (result) => {
     res.write("event: fromserver\n"); // event : <- 이런식으로 띄어쓰기 절대하지 말자... 작동안한다.
     res.write("data:" + JSON.stringify([result.fullDocument]) + "\n\n`");
+  });
+});
+
+//anonymous.io 단체채팅방
+app.get("/anonymous", (req, res) => {
+  res.render("anonymous.ejs");
+});
+//누군가가 웹소켓에 접속하면 함수실행
+io.on("connection", (socket) => {
+  console.log(socket);
+  //채팅방 만들고 작명한 방에 입장.
+  socket.on("joinRoom1", (data) => {
+    socket.join("socketChatroom1");
+  });
+
+  //서버가 유저로부터의 메세지 수신
+  socket.on("user", (data) => {
+    //서버 -> 모든유저에게 메세지전송. 그래서 작명도 broadcast
+    io.emit("broadcast", data);
   });
 });
 
